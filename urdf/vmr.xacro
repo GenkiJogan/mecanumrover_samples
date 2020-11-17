@@ -222,10 +222,6 @@
   </xacro:macro>
 
 
-
-
-
-
   <!-- joint and link set -->
   <joint name="body_joint" type="fixed">
     <parent link="base_link"/>
@@ -290,172 +286,36 @@
 
 
   <!-- option parts -->
+  <xacro:include filename="$(find mecanumrover_samples)/urdf/camera_macro.xacro" />
+
   <xacro:macro name="optionattachboard" params="prefix xyz z_dir">
 
-  <joint name="board_${prefix}_joint" type="fixed">
-    <parent link="body_link"/>
-    <child  link="board_${prefix}_link"/>
-    <origin xyz="${xyz}" rpy="0 0 ${radians(z_dir)}"/>
-  </joint>
-  <link name="board_${prefix}_link">
-    <visual>
-      <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/dae/mecanum_optionattachboard.dae" />
-      </geometry>
-      <material name="gray"/>
-    </visual>
-    <collision>
-      <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/stl/mecanum_optionattachboard.stl" />
-      </geometry>
-    </collision>
-    <inertial>
-        <xacro:box_inertial mass="0.0780" height="0.003" width="0.12" depth="0.0885" />
-    </inertial>  
-
-  </link>
-  <gazebo reference="board_${prefix}_link">
-    <material>Gazebo/White</material>
-  </gazebo>
-  </xacro:macro>
-
-
-
-  <xacro:macro name="bumper" params="prefix num xyz z_dir">
-
-  <joint name="bumper_${prefix}_${num}_joint" type="prismatic">
-    <parent link="bumper_baseboard_${prefix}_link"/>
-    <child  link="bumper_${prefix}_${num}_link"/>
-    <origin xyz="${xyz}" rpy="0 0 ${radians(z_dir)}"/>
-
-    <limit lower="0.0" upper="0.005" effort="1" velocity="1.0" />
-    <axis xyz="0 1 0"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-    <dynamics damping="0.01"/>
-
-  </joint>
-  <transmission name="bumper_${prefix}_${num}_trans">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="bumper_${prefix}_${num}_joint">
-        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    <joint name="board_${prefix}_joint" type="fixed">
+        <parent link="body_link"/>
+        <child  link="board_${prefix}_link"/>
+        <origin xyz="${xyz}" rpy="0 0 ${radians(z_dir)}"/>
     </joint>
-    <actuator name="bumper_${prefix}_${num}_motor">
-      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-      <mechanismReduction>1</mechanismReduction>
-    </actuator>
-  </transmission>
+    <link name="board_${prefix}_link">
+        <visual>
+        <geometry>
+            <mesh filename="package://mecanumrover_samples/meshes/dae/mecanum_optionattachboard.dae" />
+        </geometry>
+        <material name="gray"/>
+        </visual>
+        <collision>
+        <geometry>
+            <mesh filename="package://mecanumrover_samples/meshes/stl/mecanum_optionattachboard.stl" />
+        </geometry>
+        </collision>
+        <inertial>
+            <xacro:box_inertial mass="0.0780" height="0.003" width="0.12" depth="0.0885" />
+        </inertial>  
 
-  <link name="bumper_${prefix}_${num}_link">
-    <visual>
-      <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/dae/mecanum_bumper.dae" />
-      </geometry>
-      <material name="gray"/>
-    </visual>
-    <collision>
-      <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/stl/mecanum_bumper.stl" />
-      </geometry>
-    </collision>
-    <inertial>
-        <xacro:box_inertial mass="0.016" height="0.02096" width="0.104" depth="0.01251" />
-    </inertial>  
-
-  </link>
-  <gazebo reference="bumper_${prefix}_${num}_link">
-    <material>Gazebo/White</material>
-    <kp value="10000" />
-    <kd value="100" />
-  </gazebo>
+    </link>
+    <gazebo reference="board_${prefix}_link">
+        <material>Gazebo/White</material>
+    </gazebo>
   </xacro:macro>
-
-
-
-  <xacro:macro name="bumperbaseboard" params="prefix parent xyz z_dir">
-
-  <joint name="bumper_baseboard_${prefix}_joint" type="fixed">
-    <parent link="${parent}"/>
-    <child  link="bumper_baseboard_${prefix}_link"/>
-    <origin xyz="${xyz}" rpy="0 0 ${radians(z_dir)}"/>
-  </joint>
-  <link name="bumper_baseboard_${prefix}_link">
-    <visual>
-      <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/dae/mecanum_bumper_plate.dae" />
-      </geometry>
-      <material name="gray"/>
-    </visual>
-    <collision>
-      <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/stl/mecanum_bumper_plate.stl" />
-      </geometry>
-    </collision>
-    <inertial>
-        <xacro:box_inertial mass="0.195" height="0.0125" width="0.053" depth="0.26" />
-    </inertial>  
-
-  </link>
-  <gazebo reference="bumper_baseboard_${prefix}_link">
-    <material>Gazebo/White</material>
-  </gazebo>
-
-      <xacro:bumper prefix="${prefix}" num="0" xyz="0.10521 -0.024711 -0.00325" z_dir="26" />
-      <xacro:bumper prefix="${prefix}" num="1" xyz="0 -0.049 -0.00325" z_dir="0" />
-      <xacro:bumper prefix="${prefix}" num="2" xyz="-0.10521 -0.024711 -0.00325" z_dir="-26" />
-
-  </xacro:macro>
-
-
-
-
-  <xacro:macro name="sidebumperattachboard" params="prefix xyz z_dir">
-
-  <joint name="board_${prefix}_joint" type="fixed">
-    <parent link="body_link"/>
-    <child  link="bumper_board_${prefix}_link"/>
-    <origin xyz="${xyz}" rpy="0 0 ${radians(z_dir)}"/>
-  </joint>
-  <link name="bumper_board_${prefix}_link">
-    <visual>
-      <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/dae/mecanum_bumper_sidelink.dae" />
-      </geometry>
-      <material name="gray"/>
-    </visual>
-    <collision>
-      <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/stl/mecanum_bumper_sidelink.stl" />
-      </geometry>
-    </collision>
-    <inertial>
-        <xacro:box_inertial mass="0.038" height="0.003" width="0.03371" depth="0.3262" />
-    </inertial>  
-
-  </link>
-  <gazebo reference="bumper_board_${prefix}_link">
-    <material>Gazebo/White</material>
-  </gazebo>
-
-  <xacro:bumperbaseboard prefix="${prefix}" parent="bumper_board_${prefix}_link" xyz="0.0 -0.024 0.005" z_dir="0"/>
-
-  </xacro:macro>
-
-
-
-  <!-- Bumper  -->
-
-  <!-- right -->
-<!--  <xacro:sidebumperattachboard prefix="right" xyz="0.0 0.157 0.0285" z_dir="180"/> -->
-  <!-- left -->
- <!-- <xacro:sidebumperattachboard prefix="left" xyz="0.0 -0.157 0.0285" z_dir="0"/> -->
-
-  <!-- front -->
- <!-- <xacro:bumperbaseboard prefix="front" parent="body_link" xyz="0.196 0 0.0365" z_dir="90"/> -->
-  <!-- back -->
- <!-- <xacro:bumperbaseboard prefix="back" parent="body_link" xyz="-0.196 0 0.0365" z_dir="-90"/> -->
-
-
-
 
   <!-- base attachment(LiDER,emergency button,wyreless charge) board(front) -->
   <!--  upper side  --> 
@@ -469,7 +329,8 @@
   <!--  lower side  -->
   <xacro:optionattachboard prefix="back" xyz="-0.157 0 0.1585" z_dir="180" />
 
-
+  <!-- camera -->
+  <xacro:camera_macro parent="board_front_link" prefix="camera" xyz="0.04 0 0.05" />
 
   <!-- LiDER  -->
   <joint name="lider_joint" type="fixed">
@@ -529,119 +390,6 @@
       </plugin>
     </sensor>
   </gazebo>
-
-
-
-  <!-- emergency button  -->
-<!--
-  <joint name="button_joint" type="fixed">
-    <parent link="board_back_link"/>
-    <child  link="button_link"/>
-    <origin xyz="0.032 0 -0.0072" rpy="0 0 0"/>
-  </joint>
-  <link name="button_link">
-    <visual>
-      <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/dae/mecanum_button.dae" />
-      </geometry>
-      <material name="red"/>
-    </visual>
-    <collision>
-      <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/stl/mecanum_button.stl" />
-      </geometry>
-    </collision>
-    <inertial>
-        <xacro:box_inertial mass="0.48" height="0.3026" width="0.03" depth="0.0294" />
-    </inertial>  
-
-  </link>
-  <gazebo reference="button_link">
-    <material>Gazebo/Red</material>
-  </gazebo>
--->
-
-  <!-- Wyreless charger  -->
-  <!-- attachiment  -->
-<!--
-  <joint name="charger_attach_joint" type="fixed">
-    <parent link="board_front_link"/>
-    <child  link="charger_attach_link"/>
-    <origin xyz="0.06 0 -0.0015" rpy="0 0 0"/>
-  </joint>
-  <link name="charger_attach_link">
-    <visual>
-      <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/dae/mecanum_charger_attach.dae" />
-      </geometry>
-      <material name="gray"/>
-    </visual>
-    <collision>
-      <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/stl/mecanum_charger_attach.stl" />
-      </geometry>
-    </collision>
-    <inertial>
-        <xacro:box_inertial mass="0.222" height="0.08" width="0.078" depth="0.026" />
-    </inertial>  
-
-  </link>
-  <gazebo reference="charger_attach_link">
-    <material>Gazebo/White</material>
-  </gazebo>
--->
-
-  <!-- wyreless charger  -->
-<!--
-  <joint name="charger_joint" type="prismatic">
-    <parent link="charger_attach_link"/>
-    <child  link="charger_link"/>
-    <origin xyz="0.0645 0 -0.03" rpy="0 0 0"/>
-
-    <limit lower="-0.007" upper="0.0" effort="1" velocity="1.0" />
-    <axis xyz="1 0 0"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-    <dynamics damping="0.01"/>
-
-  </joint>
-  <transmission name="charger_trans">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="charger_joint">
-        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-    </joint>
-    <actuator name="charger_motor">
-      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-      <mechanismReduction>1</mechanismReduction>
-    </actuator>
-  </transmission>
-
-  <link name="charger_link">
-    <visual>
-      <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/dae/mecanum_charger.dae" />
-      </geometry>
-      <material name="black"/>
-    </visual>
-    <collision>
-      <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/stl/mecanum_charger.stl" />
-      </geometry>
-    </collision>
-    <inertial>
-        <xacro:box_inertial mass="1.678" height="0.11" width="0.16" depth="0.0781" />
-    </inertial>  
-
-  </link>
-  <gazebo reference="charger_link">
-    <material>Gazebo/Black</material>
-    <mu1 value="2.5" />
-    <mu2 value="2.5" />
-    <kp value="50000" />
-    <kd value="100" />
-  </gazebo>
--->
-
-
 
   <!-- NUC PC  -->
   <!-- option attach board  -->
