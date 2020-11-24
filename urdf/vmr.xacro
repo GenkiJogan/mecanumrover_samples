@@ -3,225 +3,8 @@
 
   <link name="base_link"/>
 
-  <xacro:macro name="cylinder_inertial" params="mass radius length">
-    <mass value="${mass}"/>
-    <inertia ixx="${((radius*radius)/4 + (length*length)/12)*mass}" ixy="0" ixz="0"
-        iyy="${((radius*radius)/4 + (length*length)/12)*mass}" iyz="0"
-        izz="${(mass*radius*radius)/2}" />
-  </xacro:macro>
-
-  <xacro:macro name="box_inertial" params="mass height width depth">
-    <mass value="${mass}"/>
-    <inertia ixx="${(mass*(width*width+depth*depth))/12}" ixy="0" ixz="0"
-        iyy="${(mass*(height*height+depth*depth))/12}" iyz="0"
-        izz="${(mass*(height*height+width*width))/12}" />
-  </xacro:macro>
-
-  <xacro:macro name="sus" params="prefix">
-
-    <joint name="${prefix}_sus_joint" type="prismatic">
-      <parent link="${prefix}_base_link"/>
-      <child  link="${prefix}_sus_link"/>
-      <limit lower="-0.02" upper="0.02" effort="100" velocity="1.0" />
-      <axis xyz="0 0 1"/>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <dynamics damping="0.01"/>
-    </joint>
-    <transmission name="${prefix}_sus_trans">
-      <type>transmission_interface/SimpleTransmission</type>
-      <joint name="${prefix}_sus_joint">
-          <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-      </joint>
-      <actuator name="${prefix}_sus_motor">
-        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-        <mechanismReduction>1</mechanismReduction>
-      </actuator>
-    </transmission>
-    <gazebo reference="${prefix}_sus_joint">
-      <kp>50000</kp>
-      <kd>500</kd>
-    </gazebo>
-    <link name="${prefix}_sus_link">
-      <inertial>
-        <mass value="0.010"/>
-        <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001"/>
-      </inertial>
-    </link>
-
-  </xacro:macro>
-
-  <xacro:macro name="barrel" params="prefix num dir rot">
-    <joint name="${prefix}_barrel${num}_joint" type="continuous">
-      <parent link="${prefix}_motor_shaft_link"/>
-      <child link="${prefix}_barrel${num}_link"/>
-      <origin rpy="${pi/4*rot} 0 ${radians(dir)}" xyz="${0.0666389*cos(radians(dir))} ${0.0666389*sin(radians(dir))} 0"/>
-      <axis xyz="0 0 1"/>
-      <dynamics damping="0.001"  friction="0.0"/>
-    </joint>
-    <link name="${prefix}_barrel${num}_link">
-      <visual>
-        <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/dae/mecanum_barrel.dae" />
-        </geometry>
-        <material name="black"/>
-      </visual>
-      <collision>
-        <geometry>
-          <cylinder radius="0.00956" length="0.0381" />
-        </geometry>
-      </collision>
-      <inertial>
-        <xacro:cylinder_inertial mass="0.01225" radius="0.00956" length="0.0381" />
-      </inertial>  
-
-    </link>
-    <gazebo reference="${prefix}_barrel${num}_link">
-      <material>Gazebo/Black</material>
-      <mu1 value="3.5" /> <!--default=2.5-->
-      <mu2 value="3.5" /> <!--default=2.5-->
-      <kp value="50000" />
-      <kd value="100" />
-    </gazebo>
-  </xacro:macro>
-
-  <xacro:macro name="barrels" params="prefix rot ">
-    <xacro:barrel prefix="${prefix}"  num="0" dir="0" rot="${rot}"/>
-    <xacro:barrel prefix="${prefix}"  num="1" dir="24" rot="${rot}"/>
-    <xacro:barrel prefix="${prefix}"  num="2" dir="48" rot="${rot}"/>
-    <xacro:barrel prefix="${prefix}"  num="3" dir="72" rot="${rot}"/>
-    <xacro:barrel prefix="${prefix}"  num="4" dir="96" rot="${rot}"/>
-    <xacro:barrel prefix="${prefix}"  num="5" dir="120" rot="${rot}"/>
-    <xacro:barrel prefix="${prefix}"  num="6" dir="144" rot="${rot}"/>
-    <xacro:barrel prefix="${prefix}"  num="7" dir="168" rot="${rot}"/>
-    <xacro:barrel prefix="${prefix}"  num="8" dir="192" rot="${rot}"/>
-    <xacro:barrel prefix="${prefix}"  num="9" dir="216" rot="${rot}"/>
-    <xacro:barrel prefix="${prefix}"  num="10" dir="240" rot="${rot}"/>
-    <xacro:barrel prefix="${prefix}"  num="11" dir="264" rot="${rot}"/>
-    <xacro:barrel prefix="${prefix}"  num="12" dir="288" rot="${rot}"/>
-    <xacro:barrel prefix="${prefix}"  num="13" dir="312" rot="${rot}"/>
-    <xacro:barrel prefix="${prefix}"  num="14" dir="336" rot="${rot}"/>
-  </xacro:macro>
-
-
-  <xacro:macro name="motor" params="prefix parent mesh">
-    <joint name="${prefix}_joint" type="fixed">
-      <parent link="${parent}"/>
-      <child  link="${prefix}_body_link"/>
-    </joint>
-    <link name="${prefix}_body_link">
-      <visual>
-        <origin rpy="0 ${radians(90)} 0" xyz="-0.06075 0 0"/>
-        <geometry>
-          <cylinder radius="0.02225" length="0.1215" />
-        </geometry>
-        <material name="gray"/>
-      </visual>
-      <collision>
-        <origin rpy="0 ${radians(90)} 0" xyz="-0.06075 0 0"/>
-        <geometry>
-          <cylinder radius="0.02225" length="0.1215" />
-        </geometry>
-      </collision>
-      <inertial>
-        <xacro:cylinder_inertial mass="0.880" radius="0.02225" length="0.1215" />
-      </inertial>  
-
-    </link>
-
-    <gazebo reference="${prefix}_body_link">
-      <material>Gazebo/Gray</material>
-    </gazebo>
-
-    <joint name="${prefix}_shaft_joint" type="continuous">
-      <parent link="${prefix}_body_link"/>
-      <child  link="${prefix}_shaft_link"/>
-      <origin rpy="0 ${radians(90)} 0" xyz="0 0 0"/>
-      <axis xyz="0 0 -1"/>
-      <!-- <limit velocity="40.0" effort="3.0" /> -->
-      <dynamics damping="0.01" friction="0.0"/>
-    </joint>
-
-    <transmission name="${prefix}_shaft_trans">
-      <type>transmission_interface/SimpleTransmission</type>
-      <joint name="${prefix}_shaft_joint">
-        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-      </joint>
-      <actuator name="${prefix}_shaft_motor">
-        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-        <mechanicalReduction>1</mechanicalReduction>
-      </actuator>
-    </transmission>
-
-    <link name="${prefix}_shaft_link">
-      <visual>
-        <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/dae/${mesh}.dae" />
-        </geometry>
-        <material name="gray"/>
-      </visual>
-      <collision>
-        <origin rpy="0 0 0" xyz="0 0 0"/>
-        <geometry>
-          <!-- <cylinder radius="0.048" length="0.04572" /> -->
-          <cylinder radius="0.070" length="0.04572" />
-          <!-- <mesh filename="package://mecanumrover_samples/meshes/stl/${mesh}.stl" />  -->
-        </geometry>
-      </collision>
-      <inertial>
-        <xacro:cylinder_inertial mass="0.43525" radius="0.048" length="0.04572" />
-      </inertial>  
-    </link>
-
-    <gazebo reference="${prefix}_shaft_link">
-      <material>Gazebo/White</material>
-      <mu1 value="0.0" />
-      <mu2 value="0.0" />
-    </gazebo>
-
-  </xacro:macro>
-
-  <xacro:macro name="omni_wheel_set_l" params="prefix parent">
-
-    <joint name="${prefix}_base_joint" type="fixed">
-      <parent link="${parent}"/>
-      <child link="${prefix}_base_link"/>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </joint>
-    <link name="${prefix}_base_link" >
-      <inertial>
-        <mass value="0.010"/>
-        <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
-      </inertial> 
-    </link>
-
-    <xacro:sus prefix="${prefix}"/>
-    <xacro:motor prefix="${prefix}_motor" parent="${prefix}_sus_link" mesh="mecanum_wheel_rev"/>
-    <xacro:barrels prefix="${prefix}" rot="-1"/>
-
-  </xacro:macro>
-
-
-  <xacro:macro name="omni_wheel_set_r" params="prefix parent">
-
-    <joint name="${prefix}_base_joint" type="fixed">
-      <parent link="${parent}"/>
-      <child link="${prefix}_base_link"/>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </joint>
-    <link name="${prefix}_base_link" >
-      <inertial>
-        <mass value="0.010"/>
-        <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
-      </inertial> 
-    </link>
-
-    <xacro:sus prefix="${prefix}"/>
-    <xacro:motor prefix="${prefix}_motor" parent="${prefix}_sus_link" mesh="mecanum_wheel"/>
-    <xacro:barrels prefix="${prefix}" rot="1"/>
-
-  </xacro:macro>
-
-
+  <xacro:include filename="$(find mecanumrover_samples)/urdf/wheel_macro.xacro" />
+  
   <!-- joint and link set -->
   <joint name="body_joint" type="fixed">
     <parent link="base_link"/>
@@ -243,7 +26,6 @@
     <inertial>
         <xacro:box_inertial mass="14.004" height="0.135" width="0.28" depth="0.34" />
     </inertial>  
-
   </link>
   <gazebo reference="body_link">
     <material>Gazebo/White</material>
@@ -283,113 +65,31 @@
   <xacro:omni_wheel_set_l prefix="wheel3" parent="wheel3_attach_link" />
 
 
-
-
   <!-- option parts -->
   <xacro:include filename="$(find mecanumrover_samples)/urdf/camera_macro.xacro" />
+  <xacro:include filename="$(find mecanumrover_samples)/urdf/depth_camera_macro.xacro"/>
 
-  <xacro:macro name="optionattachboard" params="prefix xyz z_dir">
+  <xacro:include filename="$(find mecanumrover_samples)/urdf/optionattachboard_macro.xacro" />
 
-    <joint name="board_${prefix}_joint" type="fixed">
-        <parent link="body_link"/>
-        <child  link="board_${prefix}_link"/>
-        <origin xyz="${xyz}" rpy="0 0 ${radians(z_dir)}"/>
-    </joint>
-    <link name="board_${prefix}_link">
-        <visual>
-        <geometry>
-            <mesh filename="package://mecanumrover_samples/meshes/dae/mecanum_optionattachboard.dae" />
-        </geometry>
-        <material name="gray"/>
-        </visual>
-        <collision>
-        <geometry>
-            <mesh filename="package://mecanumrover_samples/meshes/stl/mecanum_optionattachboard.stl" />
-        </geometry>
-        </collision>
-        <inertial>
-            <xacro:box_inertial mass="0.0780" height="0.003" width="0.12" depth="0.0885" />
-        </inertial>  
-
-    </link>
-    <gazebo reference="board_${prefix}_link">
-        <material>Gazebo/White</material>
-    </gazebo>
-  </xacro:macro>
+  <xacro:include filename="$(find mecanumrover_samples)/urdf/lidar_macro.xacro" />
 
   <!-- base attachment(LiDER,emergency button,wyreless charge) board(front) -->
   <!--  upper side  --> 
 <!--  <xacro:optionattachboard prefix="front" xyz="0.157 0 0.1665" z_dir="0" /> -->
   <!--  lower side  -->
-  <xacro:optionattachboard prefix="front" xyz="0.157 0 0.1585" z_dir="0" />   
+  <xacro:optionattachboard parent="body_link" prefix="front" xyz="0.157 0 0.1585" z_dir="0" />   
 
   <!-- base attachment(LiDER,emergency button,wyreless charge) board(back) -->
   <!--  upper side  -->
 <!--  <xacro:optionattachboard prefix="back" xyz="-0.157 0 0.1665" z_dir="180" /> -->
   <!--  lower side  -->
-  <xacro:optionattachboard prefix="back" xyz="-0.157 0 0.1585" z_dir="180" />
+  <xacro:optionattachboard parent="body_link" prefix="back" xyz="-0.157 0 0.1585" z_dir="180" />
 
   <!-- camera -->
-  <xacro:camera_macro parent="board_front_link" prefix="camera" xyz="0.04 0 0.05" />
+  <!--xacro:camera_macro parent="board_front_link" prefix="camera" xyz="0.04 0 0.05" /-->
+  <xacro:depth_camera_macro parent="board_front_link" prefix="rgbd_camera" xyz="0.04 0.0 ${0.05+0.5}" />
 
-  <!-- LiDER  -->
-  <joint name="lider_joint" type="fixed">
-    <parent link="board_front_link"/>
-    <child  link="lider_link"/>
-  <!-- attach upper side -->
-<!--    <origin xyz="0.042 0 0.0570" rpy="0 0 0"/> -->
-  <!-- attach lower side -->
-    <origin xyz="0.042 0 -0.0570" rpy="${radians(180)} 0 0"/>  
-  </joint>
-  <link name="lider_link">
-    <visual>
-      <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/dae/mecanum_lider.dae" />
-      </geometry>
-      <material name="black"/>
-    </visual>
-    <collision>
-      <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/stl/mecanum_lider.stl" />
-      </geometry>
-    </collision>
-    <inertial>
-        <xacro:box_inertial mass="0.160" height="0.07" width="0.05" depth="0.05" />
-    </inertial>  
-
-  </link>
-  <gazebo reference="lider_link">
-    <material>Gazebo/Black</material>
-    <sensor type="ray" name="lrf_sensor">
-      <pose>0 0 0 0 0 0</pose>
-      <visualize>true</visualize>
-      <update_rate>40</update_rate>
-      <ray>
-        <scan>
-          <horizontal>
-            <samples>1000</samples>
-            <resolution>1</resolution>
-            <min_angle>-1.57</min_angle>
-            <max_angle>1.57</max_angle>
-          </horizontal>
-        </scan>
-        <range>
-          <min>0.06</min>
-          <max>4.0</max>
-        <resolution>0.001</resolution>
-        </range>
-        <noise>
-          <type>gaussian</type>
-          <mean>0.0</mean>
-          <stddev>0.03</stddev>
-        </noise>
-      </ray>
-      <plugin name="gazebo_ros_lrf_controller" filename="libgazebo_ros_laser.so">
-        <topicName>/scan</topicName>
-        <frameName>laser</frameName>
-      </plugin>
-    </sensor>
-  </gazebo>
+  <xacro:lidar parent="board_front_link" prefix="front_lidar" />
 
   <!-- NUC PC  -->
   <!-- option attach board  -->

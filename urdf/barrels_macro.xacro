@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<robot name="vmecanumrover" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <xacro:include filename="$(find mecanumrover_samples)/urdf/inertial_macro.xacro" />
+
+    <xacro:macro name="barrel" params="prefix num dir rot">
+
+        <joint name="${prefix}_barrel${num}_joint" type="continuous">
+            <parent link="${prefix}_motor_shaft_link"/>
+            <child link="${prefix}_barrel${num}_link"/>
+            <origin rpy="${pi/4*rot} 0 ${radians(dir)}" xyz="${0.0666389*cos(radians(dir))} ${0.0666389*sin(radians(dir))} 0"/>
+            <axis xyz="0 0 1"/>
+            <dynamics damping="0.001"  friction="0.0"/>
+        </joint>
+
+        <link name="${prefix}_barrel${num}_link">
+            <visual>
+                <geometry>
+                <mesh filename="package://mecanumrover_samples/meshes/dae/mecanum_barrel.dae" />
+                </geometry>
+                <material name="black"/>
+            </visual>
+            <collision>
+                <geometry>
+                <cylinder radius="0.00956" length="0.0381" />
+                </geometry>
+            </collision>
+            <inertial>
+                <xacro:cylinder_inertial mass="0.01225" radius="0.00956" length="0.0381" />
+            </inertial>  
+        </link>
+
+        <gazebo reference="${prefix}_barrel${num}_link">
+            <material>Gazebo/Black</material>
+            <mu1 value="3.5" /> <!--default=2.5-->
+            <mu2 value="3.5" /> <!--default=2.5-->
+            <kp value="50000" />
+            <kd value="100" />
+        </gazebo>
+
+    </xacro:macro>
+
+    <xacro:macro name="barrels" params="prefix rot ">
+        <xacro:barrel prefix="${prefix}"  num="0" dir="0" rot="${rot}"/>
+        <xacro:barrel prefix="${prefix}"  num="1" dir="24" rot="${rot}"/>
+        <xacro:barrel prefix="${prefix}"  num="2" dir="48" rot="${rot}"/>
+        <xacro:barrel prefix="${prefix}"  num="3" dir="72" rot="${rot}"/>
+        <xacro:barrel prefix="${prefix}"  num="4" dir="96" rot="${rot}"/>
+        <xacro:barrel prefix="${prefix}"  num="5" dir="120" rot="${rot}"/>
+        <xacro:barrel prefix="${prefix}"  num="6" dir="144" rot="${rot}"/>
+        <xacro:barrel prefix="${prefix}"  num="7" dir="168" rot="${rot}"/>
+        <xacro:barrel prefix="${prefix}"  num="8" dir="192" rot="${rot}"/>
+        <xacro:barrel prefix="${prefix}"  num="9" dir="216" rot="${rot}"/>
+        <xacro:barrel prefix="${prefix}"  num="10" dir="240" rot="${rot}"/>
+        <xacro:barrel prefix="${prefix}"  num="11" dir="264" rot="${rot}"/>
+        <xacro:barrel prefix="${prefix}"  num="12" dir="288" rot="${rot}"/>
+        <xacro:barrel prefix="${prefix}"  num="13" dir="312" rot="${rot}"/>
+        <xacro:barrel prefix="${prefix}"  num="14" dir="336" rot="${rot}"/>
+    </xacro:macro>
+
+</robot>

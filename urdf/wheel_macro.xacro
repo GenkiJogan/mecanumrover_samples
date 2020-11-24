@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<robot name="vmecanumrover" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <xacro:include filename="$(find mecanumrover_samples)/urdf/sus_macro.xacro" />
+    <xacro:include filename="$(find mecanumrover_samples)/urdf/motor_macro.xacro" />
+    <xacro:include filename="$(find mecanumrover_samples)/urdf/barrels_macro.xacro" />
+
+    <xacro:macro name="omni_wheel_set_l" params="prefix parent">
+
+        <joint name="${prefix}_base_joint" type="fixed">
+            <parent link="${parent}"/>
+            <child link="${prefix}_base_link"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+        </joint>
+
+        <link name="${prefix}_base_link" >
+            <inertial>
+                <mass value="0.010"/>
+                <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+            </inertial> 
+        </link>
+
+        <xacro:sus prefix="${prefix}"/>
+        <xacro:motor prefix="${prefix}_motor" parent="${prefix}_sus_link" mesh="mecanum_wheel_rev"/>
+        <xacro:barrels prefix="${prefix}" rot="-1"/>
+
+    </xacro:macro>
+
+    <xacro:macro name="omni_wheel_set_r" params="prefix parent">
+
+        <joint name="${prefix}_base_joint" type="fixed">
+            <parent link="${parent}"/>
+            <child link="${prefix}_base_link"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+        </joint>
+
+        <link name="${prefix}_base_link" >
+            <inertial>
+                <mass value="0.010"/>
+                <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+            </inertial> 
+        </link>
+
+        <xacro:sus prefix="${prefix}"/>
+        <xacro:motor prefix="${prefix}_motor" parent="${prefix}_sus_link" mesh="mecanum_wheel"/>
+        <xacro:barrels prefix="${prefix}" rot="1"/>
+
+    </xacro:macro>
+    
+</robot>

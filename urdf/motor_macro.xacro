@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<robot name="vmecanumrover" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <xacro:include filename="$(find mecanumrover_samples)/urdf/inertial_macro.xacro" />
+
+    <xacro:macro name="motor" params="prefix parent mesh">
+
+        <joint name="${prefix}_joint" type="fixed">
+            <parent link="${parent}"/>
+            <child  link="${prefix}_body_link"/>
+        </joint>
+
+        <link name="${prefix}_body_link">
+            <visual>
+                <origin rpy="0 ${radians(90)} 0" xyz="-0.06075 0 0"/>
+                <geometry>
+                <cylinder radius="0.02225" length="0.1215" />
+                </geometry>
+                <material name="gray"/>
+            </visual>
+            <collision>
+                <origin rpy="0 ${radians(90)} 0" xyz="-0.06075 0 0"/>
+                <geometry>
+                <cylinder radius="0.02225" length="0.1215" />
+                </geometry>
+            </collision>
+            <inertial>
+                <xacro:cylinder_inertial mass="0.880" radius="0.02225" length="0.1215" />
+            </inertial>
+        </link>
+
+        <gazebo reference="${prefix}_body_link">
+            <material>Gazebo/Gray</material>
+        </gazebo>
+
+        <joint name="${prefix}_shaft_joint" type="continuous">
+            <parent link="${prefix}_body_link"/>
+            <child  link="${prefix}_shaft_link"/>
+            <origin rpy="0 ${radians(90)} 0" xyz="0 0 0"/>
+            <axis xyz="0 0 -1"/>
+            <!-- <limit velocity="40.0" effort="3.0" /> -->
+            <dynamics damping="0.01" friction="0.0"/>
+        </joint>
+
+        <transmission name="${prefix}_shaft_trans">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="${prefix}_shaft_joint">
+                <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            </joint>
+            <actuator name="${prefix}_shaft_motor">
+                <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                <mechanicalReduction>1</mechanicalReduction>
+            </actuator>
+        </transmission>
+
+        <link name="${prefix}_shaft_link">
+            <visual>
+                <geometry>
+                <mesh filename="package://mecanumrover_samples/meshes/dae/${mesh}.dae" />
+                </geometry>
+                <material name="gray"/>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                <!-- <cylinder radius="0.048" length="0.04572" /> -->
+                <cylinder radius="0.070" length="0.04572" />
+                <!-- <mesh filename="package://mecanumrover_samples/meshes/stl/${mesh}.stl" />  -->
+                </geometry>
+            </collision>
+            <inertial>
+                <xacro:cylinder_inertial mass="0.43525" radius="0.048" length="0.04572" />
+            </inertial>  
+        </link>
+
+        <gazebo reference="${prefix}_shaft_link">
+            <material>Gazebo/White</material>
+            <mu1 value="0.0" />
+            <mu2 value="0.0" />
+        </gazebo>
+
+    </xacro:macro>
+
+</robot>

@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<robot name="vmecanumrover" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <xacro:include filename="$(find mecanumrover_samples)/urdf/inertial_macro.xacro" />
+
+    <xacro:macro name="optionattachboard" params="parent prefix xyz z_dir">
+
+        <joint name="board_${prefix}_joint" type="fixed">
+            <parent link="${parent}"/>
+            <child  link="board_${prefix}_link"/>
+            <origin xyz="${xyz}" rpy="0 0 ${radians(z_dir)}"/>
+        </joint>
+
+        <link name="board_${prefix}_link">
+            <visual>
+                <geometry>
+                    <mesh filename="package://mecanumrover_samples/meshes/dae/mecanum_optionattachboard.dae" />
+                </geometry>
+                <material name="gray"/>
+            </visual>
+            <collision>
+                <geometry>
+                    <mesh filename="package://mecanumrover_samples/meshes/stl/mecanum_optionattachboard.stl" />
+                </geometry>
+            </collision>
+            <inertial>
+                <xacro:box_inertial mass="0.0780" height="0.003" width="0.12" depth="0.0885" />
+            </inertial>  
+        </link>
+
+        <gazebo reference="board_${prefix}_link">
+            <material>Gazebo/White</material>
+        </gazebo>
+
+    </xacro:macro>
+
+</robot>
