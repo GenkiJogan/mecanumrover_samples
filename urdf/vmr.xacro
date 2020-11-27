@@ -31,39 +31,20 @@
     <material>Gazebo/White</material>
   </gazebo>
 
-  <joint name="wheel0_attach_joint" type="fixed">
-    <parent link="base_link"/>
-    <child  link="wheel0_attach_link"/>
-    <origin xyz="0.115 0.132 0.075" rpy="0 0 ${radians(90)}"/>
-  </joint>
-  <link name="wheel0_attach_link" />
-  <xacro:omni_wheel_set_l prefix="wheel0" parent="wheel0_attach_link" />
+  <xacro:macro name="wheel_macro" params="num xyz rpy">
+    <joint name="wheel${num}_attach_joint" type="fixed">
+      <parent link="base_link"/>
+      <child  link="wheel${num}_attach_link"/>
+      <origin xyz="${xyz}" rpy="${rpy}"/>
+    </joint>
+    <link name="wheel${num}_attach_link" />
+    <xacro:omni_wheel_set_l prefix="wheel${num}" parent="wheel${num}_attach_link" />
+  </xacro:macro>
 
-  <joint name="wheel1_attach_joint" type="fixed">
-    <parent link="base_link"/>
-    <child  link="wheel1_attach_link"/>
-    <origin xyz="0.115 -0.132 0.075" rpy="0 0 ${radians(-90)}"/>
-  </joint>
-  <link name="wheel1_attach_link" />
-  <xacro:omni_wheel_set_r prefix="wheel1" parent="wheel1_attach_link" />
-
-
-  <joint name="wheel2_attach_joint" type="fixed">
-    <parent link="base_link"/>
-    <child  link="wheel2_attach_link"/>
-    <origin xyz="-0.115 0.132 0.075" rpy="0 0 ${radians(90)}"/>
-  </joint>
-  <link name="wheel2_attach_link" />
-  <xacro:omni_wheel_set_r prefix="wheel2" parent="wheel2_attach_link" />
-
-  <joint name="wheel3_attach_joint" type="fixed">
-    <parent link="base_link"/>
-    <child  link="wheel3_attach_link"/>
-    <origin xyz="-0.115 -0.132 0.075" rpy="0 0 ${radians(-90)}"/>
-  </joint>
-  <link name="wheel3_attach_link" />
-  <xacro:omni_wheel_set_l prefix="wheel3" parent="wheel3_attach_link" />
-
+  <xacro:wheel_macro num="0" xyz="0.115 0.132 0.075" rpy="0 0 ${radians(90)}"/>
+  <xacro:wheel_macro num="1" xyz="0.115 -0.132 0.075" rpy="0 0 ${radians(-90)}"/>
+  <xacro:wheel_macro num="2" xyz="-0.115 0.132 0.075" rpy="0 0 ${radians(90)}"/>
+  <xacro:wheel_macro num="3" xyz="-0.115 -0.132 0.075" rpy="0 0 ${radians(-90)}"/>
 
   <!-- option parts -->
   <xacro:include filename="$(find mecanumrover_samples)/urdf/camera_macro.xacro" />
@@ -91,63 +72,6 @@
 
   <xacro:lidar parent="board_front_link" prefix="front_lidar" />
 
-  <!-- NUC PC  -->
-  <!-- option attach board  -->
-  <joint name="board_center_joint" type="fixed">
-    <parent link="body_link"/>
-    <child  link="board_center_link"/>
-    <origin xyz="0.0 0 0.1665" rpy="0 0 0"/>
-  </joint>
-  <link name="board_center_link">
-    <visual>
-      <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/dae/mecanum_nuc_board.dae" />
-      </geometry>
-      <material name="gray"/>
-    </visual>
-    <collision>
-      <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/stl/mecanum_nuc_board.stl" />
-      </geometry>
-    </collision>
-    <inertial>
-        <xacro:box_inertial mass="0.16" height="0.003" width="0.27" depth="0.095" />
-    </inertial>  
-
-  </link>
-  <gazebo reference="board_center_link">
-    <material>Gazebo/White</material>
-  </gazebo>
-
-  <!-- NUC  -->
-  <joint name="nuc_joint" type="fixed">
-    <parent link="board_center_link"/>
-    <child  link="nuc_link"/>
-    <origin xyz="0.0 0 0.019" rpy="0 0 0"/>
-  </joint>
-  <link name="nuc_link">
-    <visual>
-      <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/dae/mecanum_nuc.dae" />
-      </geometry>
-      <material name="black"/>
-    </visual>
-    <collision>
-      <geometry>
-          <mesh filename="package://mecanumrover_samples/meshes/stl/mecanum_nuc.stl" />
-      </geometry>
-    </collision>
-    <inertial>
-        <xacro:box_inertial mass="1.18" height="0.0352" width="0.117" depth="0.112" />
-    </inertial>  
-
-  </link>
-  <gazebo reference="nuc_link">
-    <material>Gazebo/Black</material>
-  </gazebo>
-
-
-
 
 
   <gazebo>
@@ -155,7 +79,7 @@
       <robotNamespace>/vmecanumrover</robotNamespace>
       <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
       <legacyModeNS>true</legacyModeNS>
-      <odometryFrame>map</odometryFrame>
+      <odometryFrame>odom</odometryFrame>
     </plugin>
 
     <plugin name="ground_truth" filename="libgazebo_ros_p3d.so">

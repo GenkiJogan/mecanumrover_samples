@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<robot name="vmecanumrover" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find mecanumrover_samples)/urdf/inertial_macro.xacro" />
+
+  <xacro:macro name="nuc" params="parent prefix xyz">
+    <joint name="nuc_joint" type="fixed">
+			<parent link="${parent}"/>
+			<child  link="${prefix}"/>
+			<origin xyz="${xyz}" rpy="0 0 0"/>
+    </joint>
+
+    <link name="${prefix}">
+			<visual>
+				<geometry>
+					<mesh filename="package://mecanumrover_samples/meshes/dae/mecanum_nuc.dae" />
+				</geometry>
+				<material name="black"/>
+			</visual>
+			<collision>
+				<geometry>
+					<mesh filename="package://mecanumrover_samples/meshes/stl/mecanum_nuc.stl" />
+				</geometry>
+			</collision>
+			<inertial>
+				<xacro:box_inertial mass="1.18" height="0.0352" width="0.117" depth="0.112" />
+			</inertial>  
+    </link>
+
+    <gazebo reference="${prefix}">
+			<material>Gazebo/Black</material>
+		</gazebo>
+
+  </xacro:macro>
+
+</robot>

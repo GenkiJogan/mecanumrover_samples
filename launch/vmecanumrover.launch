@@ -94,4 +94,6 @@
     <remap from="sus3" to="/vmecanumrover/sus_controller3/command" />
   </node>
 
+  <node pkg="tf" type="static_transform_publisher" name="stp_laser" args="0.2 0 0.08 3.14159 3.14159 0 base_link laser 1" />
+
 </launch>
